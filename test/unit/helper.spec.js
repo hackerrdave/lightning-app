@@ -60,6 +60,18 @@ describe('Helpers Unit Tests', () => {
       expect(num, 'to match', /1[,.]0{3}[,.]0{3}[,.]0{2}/);
       expect(num, 'to match', /\${1}/);
     });
+
+    it('should work for centTenths = true', () => {
+      const num = helpers.formatFiat(100.234, 'usd', true);
+      expect(num, 'to match', /10{2}[,.]234/);
+      expect(num, 'to match', /\${1}/);
+    });
+
+    it('should work for centTenths = true with no change', () => {
+      const num = helpers.formatFiat(100.0, 'usd', true);
+      expect(num, 'to match', /10{2}[,.]00/);
+      expect(num, 'to match', /\${1}/);
+    });
   });
 
   describe('parseDate()', () => {
@@ -491,8 +503,8 @@ describe('Helpers Unit Tests', () => {
     });
 
     it('should convert number value to fiat', () => {
-      const lbl = helpers.toAmountLabel(100000, settings);
-      expect(lbl, 'to match', /6{1}[,.]9{1}0{1}/);
+      const lbl = helpers.toAmountLabel(100000, settings, true);
+      expect(lbl, 'to match', /6{1}[,.]8{1}9{1}5{1}/);
     });
 
     it('should format a number value', () => {

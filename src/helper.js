@@ -24,12 +24,13 @@ export const formatNumber = val => {
  * @param  {string} currency   The fiat currency e.g. 'usd'
  * @return {string}            The formatte fiat currency value
  */
-export const formatFiat = (val, currency) => {
+export const formatFiat = (val, currency, centTenths = false) => {
   let num = Number(val);
   if (isNaN(num)) {
     num = 0;
   }
-  const options = { style: 'currency', currency };
+  const minimumFractionDigits = centTenths && val % 1 !== 0 ? 3 : 2;
+  const options = { style: 'currency', minimumFractionDigits, currency };
   return new Intl.NumberFormat(undefined, options).format(num);
 };
 
@@ -113,7 +114,7 @@ export const calculateExchangeRate = (satoshis, settings) => {
  * @param  {Object} settings Contains the current exchange rate
  * @return {string}          The corresponding value label
  */
-export const toAmountLabel = (satoshis, settings) => {
+export const toAmountLabel = (satoshis, settings, centTenths = false) => {
   if (
     !Number.isInteger(satoshis) ||
     typeof settings.displayFiat !== 'boolean'
@@ -121,7 +122,11 @@ export const toAmountLabel = (satoshis, settings) => {
     throw new Error('Invalid input!');
   }
   return settings.displayFiat
-    ? formatFiat(calculateExchangeRate(satoshis, settings), settings.fiat)
+    ? formatFiat(
+        calculateExchangeRate(satoshis, settings),
+        settings.fiat,
+        centTenths
+      )
     : formatNumber(toAmount(satoshis, settings));
 };
 
@@ -134,7 +139,7 @@ export const toAmountLabel = (satoshis, settings) => {
  */
 export const toLabel = (amount, settings) => {
   const satoshis = toSatoshis(amount, settings);
-  return toAmountLabel(satoshis, settings);
+  return toAmountLabel(satoshis, settings, true);
 };
 
 /**
